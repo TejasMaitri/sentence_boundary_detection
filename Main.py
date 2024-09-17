@@ -7,10 +7,23 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 
-# Download necessary NLTK data
-nltk.download('averaged_perceptron_tagger')
-nltk.download('punkt')
-nltk.download('brown')
+# Function to ensure NLTK data is downloaded
+def download_nltk_data():
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('taggers/averaged_perceptron_tagger')
+    except LookupError:
+        nltk.download('averaged_perceptron_tagger')
+    try:
+        nltk.data.find('corpora/brown')
+    except LookupError:
+        nltk.download('brown')
+
+# Ensure necessary NLTK data is downloaded
+download_nltk_data()
 
 # Load a subset of the Brown Corpus sentences
 sentences = nltk.corpus.brown.sents(categories='news')[:1000]  # Using only the first 1000 sentences for demonstration
