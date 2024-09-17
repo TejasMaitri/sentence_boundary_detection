@@ -1,22 +1,16 @@
-import os
-import nltk
 import streamlit as st
+import nltk
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
-
-# Set up NLTK data directory
-nltk_data_dir = './nltk_data'
-if not os.path.exists(nltk_data_dir):
-    os.makedirs(nltk_data_dir)
-
-nltk.data.path.append(nltk_data_dir)
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score
 
 # Download necessary NLTK data
-nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
-nltk.download('punkt', download_dir=nltk_data_dir)
-nltk.download('brown', download_dir=nltk_data_dir)
+nltk.download('averaged_perceptron_tagger')
+nltk.download('punkt')
+nltk.download('brown')
 
 # Load a subset of the Brown Corpus sentences
 sentences = nltk.corpus.brown.sents(categories='news')[:1000]  # Using only the first 1000 sentences for demonstration
@@ -35,6 +29,9 @@ def create_sentence_boundary_data(sentences):
                 labels.append(0)  # 0 indicates continuation of a sentence
     
     return words, labels
+
+# Generate words and labels (EOS)
+words, labels = create_sentence_boundary_data(sentences)
 
 # Function to extract features, including POS tagging and word length
 def extract_features(words):
@@ -69,9 +66,10 @@ def extract_features(words):
     
     return features
 
-# Prepare the data for the model
-words, labels = create_sentence_boundary_data(sentences)
+# Extract features from the words
 features = extract_features(words)
+
+# Convert the list of features to a pandas DataFrame
 df = pd.DataFrame(features)
 
 # Vectorize the 'word' and 'pos_tag' features using CountVectorizer
@@ -86,7 +84,7 @@ X_word_dense = X_word.toarray()
 X_pos_dense = X_pos.toarray()
 
 # Combine the vectorized 'word' and 'pos_tag' features with other features
-X = np.hstack([ 
+X = np.hstack([
     X_word_dense, 
     X_pos_dense, 
     df[['is_punctuation', 'next_word_capitalized', 'word_length', 'is_first_word', 'is_last_word']].values
@@ -95,9 +93,12 @@ X = np.hstack([
 # Target labels (EOS labels)
 y = np.array(labels)
 
+# Split data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
 # Train a Logistic Regression model
 model = LogisticRegression(max_iter=1000)  # Increased max_iter for convergence
-model.fit(X, y)
+model.fit(X_train, y_train)
 
 # Streamlit App
 st.title('Sentence Boundary Detection')
@@ -119,7 +120,7 @@ if st.button('Predict'):
         X_word_input_dense = X_word_input.toarray()
         X_pos_input_dense = X_pos_input.toarray()
         
-        X_input = np.hstack([ 
+        X_input = np.hstack([
             X_word_input_dense,
             X_pos_input_dense,
             df_input[['is_punctuation', 'next_word_capitalized', 'word_length', 'is_first_word', 'is_last_word']].values
@@ -135,3 +136,9 @@ if st.button('Predict'):
             st.write(f"'{word}': {boundary}")
     else:
         st.write('Please enter some text to predict.')
+
+# For evaluating the model
+st.write("### Model Evaluation")
+st.write("Accuracy:", accuracy_score(y_test, model.predict(X_test)))
+st.write("### Classification Report")
+st.write(classification_report(y_test, model.predict(X_test)))
