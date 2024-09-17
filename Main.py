@@ -1,5 +1,3 @@
-pip install nltk
-
 import streamlit as st
 import nltk
 import pandas as pd
