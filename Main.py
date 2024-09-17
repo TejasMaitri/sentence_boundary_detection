@@ -1,14 +1,17 @@
-import streamlit as st
+import os
 import nltk
+import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
-from nltk.data import path as nltk_data_path
 
-# Specify a directory for NLTK data
+# Set up NLTK data directory
 nltk_data_dir = './nltk_data'
-nltk_data_path.append(nltk_data_dir)
+if not os.path.exists(nltk_data_dir):
+    os.makedirs(nltk_data_dir)
+
+nltk.data.path.append(nltk_data_dir)
 
 # Download necessary NLTK data
 nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
