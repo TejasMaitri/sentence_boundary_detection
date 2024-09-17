@@ -83,7 +83,7 @@ X_word_dense = X_word.toarray()
 X_pos_dense = X_pos.toarray()
 
 # Combine the vectorized 'word' and 'pos_tag' features with other features
-X = np.hstack([
+X = np.hstack([ 
     X_word_dense, 
     X_pos_dense, 
     df[['is_punctuation', 'next_word_capitalized', 'word_length', 'is_first_word', 'is_last_word']].values
@@ -116,7 +116,7 @@ if st.button('Predict'):
         X_word_input_dense = X_word_input.toarray()
         X_pos_input_dense = X_pos_input.toarray()
         
-        X_input = np.hstack([
+        X_input = np.hstack([ 
             X_word_input_dense,
             X_pos_input_dense,
             df_input[['is_punctuation', 'next_word_capitalized', 'word_length', 'is_first_word', 'is_last_word']].values
