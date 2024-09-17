@@ -4,11 +4,16 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
+from nltk.data import path as nltk_data_path
+
+# Specify a directory for NLTK data
+nltk_data_dir = './nltk_data'
+nltk_data_path.append(nltk_data_dir)
 
 # Download necessary NLTK data
-nltk.download('averaged_perceptron_tagger')
-nltk.download('punkt')
-nltk.download('brown')
+nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_dir)
+nltk.download('punkt', download_dir=nltk_data_dir)
+nltk.download('brown', download_dir=nltk_data_dir)
 
 # Load a subset of the Brown Corpus sentences
 sentences = nltk.corpus.brown.sents(categories='news')[:1000]  # Using only the first 1000 sentences for demonstration
