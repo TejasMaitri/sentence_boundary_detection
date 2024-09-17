@@ -6,21 +6,21 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
+import os
 
 # Function to ensure NLTK data is downloaded
 def download_nltk_data():
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt')
-    try:
-        nltk.data.find('taggers/averaged_perceptron_tagger')
-    except LookupError:
-        nltk.download('averaged_perceptron_tagger')
-    try:
-        nltk.data.find('corpora/brown')
-    except LookupError:
-        nltk.download('brown')
+    data = [
+        ('tokenizers/punkt', 'punkt'),
+        ('taggers/averaged_perceptron_tagger', 'averaged_perceptron_tagger'),
+        ('corpora/brown', 'brown')
+    ]
+    for path, resource in data:
+        try:
+            nltk.data.find(path)
+        except LookupError:
+            print(f"Downloading {resource}...")
+            nltk.download(resource)
 
 # Ensure necessary NLTK data is downloaded
 download_nltk_data()
